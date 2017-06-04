@@ -1,0 +1,59 @@
+function sortMatrix= radicalSrp(x,y,z )
+%uniformLbp 该函数的作用是生成每一个像素点位置的lbp值
+%   value是值，x是传入的矩阵，y是矩阵横坐标，z是矩阵的纵坐标
+%逆时针旋转的计算
+%matlab图像的数组都是unit8格式，是没有负数的，可以转化为double解决
+%part1计算第一部分的radical_diff
+%计算内插值，这里采用的是双线性差值
+%part2计算第二部分的radical_diff
+%先计算外层一圈的差值共有十六个
+valueone(1)=x(y,z+1);
+valueone(2)=doubInter(22.5,1,x(y,z),x(y,z+1),x(y-1,z),x(y-1,z+1),1);
+valueone(3)=doubInter(45,1,x(y,z),x(y,z+1),x(y-1,z),x(y-1,z+1),1);
+valueone(4)=doubInter(67.5,1,x(y,z),x(y,z+1),x(y-1,z),x(y-1,z+1),1);
+valueone(5)=x(y-1,z);
+valueone(6)=doubInter(22.5,1,x(y,z),x(y-1,z),x(y,z-1),x(y-1,z-1),1);
+valueone(7)=doubInter(45,1,x(y,z),x(y-1,z),x(y,z-1),x(y-1,z-1),1);
+valueone(8)=doubInter(67.5,1,x(y,z),x(y-1,z),x(y,z-1),x(y-1,z-1),1);
+valueone(9)=x(y,z-1);
+valueone(10)=doubInter(22.5,1,x(y,z),x(y,z-1),x(y+1,z),x(y+1,z-1),1);
+valueone(11)=doubInter(45,1,x(y,z),x(y,z-1),x(y+1,z),x(y+1,z-1),1);
+valueone(12)=doubInter(67.5,1,x(y,z),x(y,z-1),x(y+1,z),x(y+1,z-1),1);
+valueone(13)=x(y,z-1);
+valueone(14)=doubInter(22.5,1,x(y,z),x(y+1,z),x(y,z+1),x(y+1,z+1),1);
+valueone(15)=doubInter(45,1,x(y,z),x(y+1,z),x(y,z+1),x(y+1,z+1),1);
+valueone(16)=doubInter(67.5,1,x(y,z),x(y+1,z),x(y,z+1),x(y+1,z+1),1);
+%再计算外层第二圈的差值共有十六个
+lenthx=2*cosd(22.5)-1;
+lenthy=2*sind(22.5);
+lenthx1=2*sind(45)-1;
+lenthy1=2*cosd(45)-1;
+%计算的是横纵的x和y
+valuetwo(1)=x(y,z+2);
+valuetwo(2)=doubInter(lenthx,lenthy,x(y,z+1),x(y,z+2),x(y-1,z+1),x(y-1,z+2),2);
+valuetwo(3)=doubInter(lenthx1,lenthy1,x(y-1,z+1),x(y-1,z+2),x(y-2,z+1),x(y-2,z+2),2);
+valuetwo(4)=doubInter(lenthy,lenthx,x(y-1,z),x(y-1,z+1),x(y-2,z),x(y-2,z+1),2);
+valuetwo(5)=x(y-2,z);
+valuetwo(6)=doubInter(lenthy,lenthx,x(y-1,z),x(y-1,z-1),x(y-1,z),x(y-2,z-1),2);
+valuetwo(7)=doubInter(lenthx1,lenthy1,x(y-1,z-1),x(y-1,z-2),x(y-2,z-1),x(y-2,z-2),2);
+valuetwo(8)=doubInter(lenthx,lenthy,x(y,z-1),x(y,z-2),x(y-1,z-1),x(y-1,z-2),2);
+valuetwo(9)=x(y,z-2);
+valuetwo(10)=doubInter(lenthx,lenthy,x(y,z-1),x(y,z-2),x(y+1,z-1),x(y+1,z-2),2);
+valuetwo(11)=doubInter(lenthx1,lenthy1,x(y+1,z-1),x(y+1,z-2),x(y+2,z-1),x(y+2,z-2),2);
+valuetwo(12)=doubInter(lenthy,lenthx,x(y+1,z),x(y+1,z-1),x(y+2,z),x(y+2,z-1),2);
+valuetwo(13)=x(y+2,z);
+valuetwo(14)=doubInter(lenthy,lenthx,x(y+1,z),x(y+1,z+1),x(y+2,z),x(y+2,z+1),2);
+valuetwo(15)=doubInter(lenthx1,lenthy1,x(y+1,z+1),x(y+1,z+2),x(y+2,z+1),x(y+2,z+2),2);
+valuetwo(16)=doubInter(lenthx,lenthy,x(y,z+1),x(y,z+2),x(y+1,z+1),x(y+1,z+2),2);
+for i=1:8
+    a=2*i-1;
+    sort1(i,1)=valueone(a)-double(x(y,z));
+end
+sort1=sort(sort1);
+for j=1:16
+    sort2(j,1)=valuetwo(i)-valueone(i);
+end
+sort2=sort(sort2);
+%将两个拼接在一块
+sortMatrix=cat(1,sort1,sort2);
+end
